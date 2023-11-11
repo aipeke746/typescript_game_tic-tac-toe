@@ -1,32 +1,12 @@
 import Phaser from 'phaser';
 
-class TestScene extends Phaser.Scene {
-  constructor() {
-    super('testScene');
-  }
-  preload() {
-    this.load.setBaseURL('https://labs.phaser.io');
-
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-    this.load.image('red', 'assets/particles/red.png');
-  }
-
-  create() {
-    this.add.image(400, 300, 'sky');
-
-    const logo = this.physics.add.image(400, 100, 'logo');
-
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
-  }
-}
+import { TitleScene } from './scene/titleScene';
+import { GameScene } from './scene/gameScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 384,
+  height: 384,
   parent: 'app',
   physics: {
     default: 'arcade',
@@ -34,7 +14,10 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: TestScene,
+  scale: {
+    mode: Phaser.Scale.FIT,
+  },
+  scene: [TitleScene, GameScene],
 };
 
 new Phaser.Game(config);
