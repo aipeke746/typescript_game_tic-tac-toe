@@ -2,10 +2,12 @@ import { Coordinate } from "../entity/coordinate";
 import { Tilemap } from "../map/tilemap";
 import { GameManager } from "../manager/gameManager";
 import { MarkType } from "../type/markType";
+import { BattleService } from "../service/battleService";
 
 export class GameScene extends Phaser.Scene {
     private gameManager?: GameManager;
     private tilemap?: Tilemap;
+    private titleText?: Phaser.GameObjects.Text;
 
     constructor() {
         super({ key: 'gameScene' });
@@ -19,10 +21,30 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.fadeIn(500, 255, 255, 255);
         this.gameManager = new GameManager(this);
         this.tilemap = new Tilemap(this, 'mapTiles');
+
+        this.titleText = this.add.text(this.sys.canvas.width/2, this.sys.canvas.height/2, 'TITLE PAGE')
+            .setOrigin(0.5)
+            .setFontSize(32)
+            .setVisible(false)
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.cameras.main.fadeOut(500, 255, 255, 255);
+                this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+                    this.scene.start('titleScene');
+                });
+            });
     }
 
     update() {
-        if (!this.gameManager || !this.tilemap) return;
+        if (!this.gameManager || !this.tilemap || !this.titleText) return;
+
+        if (this.gameManager.getWinner() !== MarkType.None) {
+            const winner = this.gameManager.getWinner() == MarkType.Maru ? '○' : '×';
+            this.add.text(this.sys.canvas.width/2, this.sys.canvas.height - 50, 'WINNER: ' + winner)
+                .setOrigin(0.5)
+                .setFontSize(32);
+            return;
+        }
 
         if (this.gameManager.isMouseDown()) {
             this.gameManager.reverseIsDown();
@@ -31,21 +53,8 @@ export class GameScene extends Phaser.Scene {
             if (coordinate.isInvalid()) return;
             if (this.tilemap.field.getMarkType(coordinate) !== MarkType.None) return;
 
-            this.gameManager.isSenkoTurn()
-                ? this.tilemap.field.update(coordinate, MarkType.Maru)
-                : this.tilemap.field.update(coordinate, MarkType.Batsu);
-
-            this.gameManager.nextTurn();
-            this.tilemap.updateTile(this.tilemap.field.getMarkType(coordinate), coordinate);
-
-            const lineMark = this.tilemap.field.getLine();
-            if (lineMark !== MarkType.None) {
-                const winner = lineMark === MarkType.Maru ? 'Maru' : 'Batsu';
-                console.log("Winner: " + winner);
-            }
-            if (this.tilemap.field.isFull()) {
-                console.log('Draw');
-            }
+            BattleService.gameFlow(this.gameManager, this.tilemap, coordinate);
+            BattleService.gameJudge(this.gameManager, this.tilemap, this.titleText);
         } else if (this.gameManager.isMouseUp()) {
             this.gameManager.reverseIsDown();
         }

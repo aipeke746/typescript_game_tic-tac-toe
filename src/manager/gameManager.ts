@@ -1,3 +1,5 @@
+import { MarkType } from "../type/markType";
+
 /**
  * ゲームの状態を管理するクラス
  */
@@ -18,6 +20,10 @@ export class GameManager {
      * ターン数
      */
     private count = 0;
+    /**
+     * 勝者
+     */
+    private winner = MarkType.None;
 
     constructor(scene: Phaser.Scene) {
         this.pointer = scene.input.activePointer;
@@ -68,5 +74,21 @@ export class GameManager {
     public nextTurn(): void {
         this.isSenko = !this.isSenko;
         this.count++;
+    }
+
+    /**
+     * 勝者を設定する
+     * @param winner 勝者を設定する
+     */
+    public setWinner(winner: MarkType): void {
+        this.winner = winner;
+    }
+
+    /**
+     * 勝者を取得する
+     * @returns 勝者を取得する
+     */
+    public getWinner(): MarkType {
+        return this.winner;
     }
 }
