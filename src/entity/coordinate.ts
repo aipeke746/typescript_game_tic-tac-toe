@@ -1,4 +1,4 @@
-import { Tilemap } from "../map/tilemap";
+import { Field } from "./field";
 
 /**
  * タイルマップ（フィールド）の座標を扱うクラス
@@ -11,18 +11,16 @@ export class Coordinate {
     private ty: number;
 
     /**
-     * マウスの座標からタイルマップの座標を作成する
-     * @param field タイルマップの情報
-     * @param mousePos マウスの座標
+     * タイルマップの座標を指定してCoordinateを生成する
+     * @param tx タイルマップのx座標
+     * @param ty タイルマップのy座標
      */
-    constructor(tilemap: Tilemap, mousePos: number[]) {
-        const length = tilemap.field.getLength();
-        const size = tilemap.field.getSize();
+    constructor(tx: number, ty: number) {
+        this.tx = tx;
+        this.ty = ty;
 
-        [this.tx, this.ty] = this.calculate(mousePos, size);
-
-        if (this.tx < 0 || this.tx >= length) this.tx = -1;
-        if (this.ty < 0 || this.ty >= length) this.ty = -1;
+        if (this.tx < 0 || Field.LENGTH <= this.tx) this.tx = -1;
+        if (this.ty < 0 || Field.LENGTH <= this.ty) this.ty = -1;
     }
 
     /**
@@ -39,16 +37,5 @@ export class Coordinate {
      */
     public isInvalid(): boolean {
         return this.tx === -1 || this.ty === -1;
-    }
-
-    /**
-     * マウスの座標からタイルマップの座標を計算する
-     * @param mousePos マウスの座標
-     * @returns タイルマップの座標
-     */
-    private calculate(mousePos: number[], size: number): number[] {
-        const tx = Math.floor(mousePos[0] / size);
-        const ty = Math.floor(mousePos[1] / size);
-        return [tx, ty];
     }
 }

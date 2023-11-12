@@ -23,9 +23,14 @@ export class Tilemap {
      */
     private layer: Phaser.Tilemaps.TilemapLayer;
 
+    /**
+     * コンストラクタ
+     * @param scene シーン
+     * @param tilesetName タイルセットの名前
+     */
     constructor(scene: Phaser.Scene, tilesetName: string) {
         this.field = new Field();
-        this.map = scene.make.tilemap({ data: this.field.getMain(), tileWidth: this.field.getSize(), tileHeight: this.field.getSize() });
+        this.map = scene.make.tilemap({ data: this.field.getMain(), tileWidth: Field.SIZE, tileHeight: Field.SIZE });
         this.tileset = this.getTileset(tilesetName, this.map);
         this.layer = this.getLayer(this.tileset);
     }

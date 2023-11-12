@@ -13,7 +13,7 @@ export class GameManager {
      */
     private isDown = false;
     /**
-     * 先攻かどうか
+     * 先攻かどうか（先行は○）
      */
     private isSenko = true;
     /**

@@ -3,6 +3,7 @@ import { Tilemap } from "../map/tilemap";
 import { GameManager } from "../manager/gameManager";
 import { MarkType } from "../type/markType";
 import { BattleService } from "../service/battleService";
+import { CoordinateFactory } from "../factory/coordinateFactory";
 
 export class GameScene extends Phaser.Scene {
     private gameManager?: GameManager;
@@ -38,18 +39,20 @@ export class GameScene extends Phaser.Scene {
     update() {
         if (!this.gameManager || !this.tilemap || !this.titleText) return;
 
+        // 勝者が決まった場合
         if (this.gameManager.getWinner() !== MarkType.None) {
-            const winner = this.gameManager.getWinner() == MarkType.Maru ? '○' : '×';
+            const winner = this.gameManager.getWinner() == MarkType.Maru ? '○' : 'x';
             this.add.text(this.sys.canvas.width/2, this.sys.canvas.height - 50, 'WINNER: ' + winner)
                 .setOrigin(0.5)
                 .setFontSize(32);
             return;
         }
 
+        // ゲームプレイ中
         if (this.gameManager.isMouseDown()) {
             this.gameManager.reverseIsDown();
             
-            const coordinate: Coordinate = new Coordinate(this.tilemap, this.gameManager.getMousePos());
+            const coordinate: Coordinate = CoordinateFactory.createByMousePos(this.gameManager.getMousePos());
             if (coordinate.isInvalid()) return;
             if (this.tilemap.field.getMarkType(coordinate) !== MarkType.None) return;
 

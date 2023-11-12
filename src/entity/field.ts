@@ -8,15 +8,15 @@ export class Field {
     /**
      * 1マスのサイズ
      */
-    private SIZE = 128;
+    public static readonly SIZE = 128;
     /**
      * フィールドの長さ
      */
-    private LENGTH = 3;
+    public static readonly LENGTH = 3;
     /**
      * フィールドの情報
      */
-    private field: number[][] = Array.from(Array(this.LENGTH), () => new Array(this.LENGTH).fill(MarkType.None));
+    private field: number[][] = Array.from(Array(Field.LENGTH), () => new Array(Field.LENGTH).fill(MarkType.None));
 
     /**
      * フィールドの情報を取得する
@@ -24,22 +24,6 @@ export class Field {
      */
     public getMain() {
         return this.field;
-    }
-
-    /**
-     * 1マスのサイズを取得する
-     * @returns 1マスのサイズ
-     */
-    public getSize(): number {
-        return this.SIZE;
-    }
-
-    /**
-     * フィールドの長さを取得する
-     * @returns フィールドの長さ
-     */
-    public getLength(): number {
-        return this.LENGTH;
     }
 
     /**
