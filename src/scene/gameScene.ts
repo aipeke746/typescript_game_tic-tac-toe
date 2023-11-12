@@ -1,23 +1,11 @@
-enum Mark {
-    None = 0,
-    Maru = 1,
-    Batsu = 2,
-}
+import { Coordinate } from "../entity/coordinate";
+import { Tilemap } from "../map/tilemap";
+import { GameManager } from "../manager/gameManager";
+import { MarkType } from "../type/markType";
 
 export class GameScene extends Phaser.Scene {
-    private MAP_SIZE = 128
-    private FIELD: Mark[][] = Array.from(Array(3), () => new Array(3).fill(0));
-
-    private map?: Phaser.Tilemaps.Tilemap;
-    private tileset?: Phaser.Tilemaps.Tileset;
-    private layer?: Phaser.Tilemaps.TilemapLayer;
-
-    private pointer?: Phaser.Input.Pointer;
-    private isDown = false;
-    private isSenko = true;
-    private count = 0;
-
-    private field_buf: Mark[][] = this.FIELD;
+    private gameManager?: GameManager;
+    private tilemap?: Tilemap;
 
     constructor() {
         super({ key: 'gameScene' });
@@ -29,88 +17,37 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         this.cameras.main.fadeIn(500, 255, 255, 255);
-
-        this.map = this.make.tilemap({ data: this.field_buf, tileWidth: this.MAP_SIZE, tileHeight: this.MAP_SIZE });
-        this.tileset = this.getTileset('mapTiles', this.map);
-        this.layer = this.getLayer(this.tileset);
-
-        this.pointer = this.input.activePointer;
+        this.gameManager = new GameManager(this);
+        this.tilemap = new Tilemap(this, 'mapTiles');
     }
 
     update() {
-        if (!this.pointer || !this.tileset || !this.layer) return;
+        if (!this.gameManager || !this.tilemap) return;
 
-        if (this.pointer.isDown && !this.isDown) {
-            this.isDown = true;
-            const tilePos = this.getTileCoordinate(this.pointer.x, this.pointer.y);
+        if (this.gameManager.isMouseDown()) {
+            this.gameManager.reverseIsDown();
+            
+            const coordinate: Coordinate = new Coordinate(this.tilemap, this.gameManager.getMousePos());
+            if (coordinate.isInvalid()) return;
+            if (this.tilemap.field.getMarkType(coordinate) !== MarkType.None) return;
 
-            if (this.field_buf[tilePos[1]][tilePos[0]] === Mark.None) {
-                this.isSenko
-                    ? this.field_buf[tilePos[1]][tilePos[0]] = Mark.Maru
-                    : this.field_buf[tilePos[1]][tilePos[0]] = Mark.Batsu;
+            this.gameManager.isSenkoTurn()
+                ? this.tilemap.field.update(coordinate, MarkType.Maru)
+                : this.tilemap.field.update(coordinate, MarkType.Batsu);
 
-                this.isSenko = !this.isSenko;
-                this.count++;
-                this.layer.putTileAt(this.field_buf[tilePos[1]][tilePos[0]], tilePos[0], tilePos[1]);
+            this.gameManager.nextTurn();
+            this.tilemap.updateTile(this.tilemap.field.getMarkType(coordinate), coordinate);
 
-                const checkWinner = this.checkWinner();
-                if (checkWinner !== Mark.None) {
-                    const winner = checkWinner === Mark.Maru ? 'Maru' : 'Batsu';
-                    console.log("Winner: " + winner);
-                }
-                if (this.count == this.field_buf.length * this.field_buf.length) {
-                    console.log('Draw');
-                }
+            const lineMark = this.tilemap.field.getLine();
+            if (lineMark !== MarkType.None) {
+                const winner = lineMark === MarkType.Maru ? 'Maru' : 'Batsu';
+                console.log("Winner: " + winner);
             }
-        } else if (!this.pointer.isDown && this.isDown) {
-            this.isDown = false;
-        }
-    }
-
-    private checkLine(line: number[]): number {
-        const [a, b, c] = line;
-        return a === b && a === c ? a : Mark.None;
-    }
-
-    private checkWinner(): number {
-        // 横
-        for (let i=0; i<this.field_buf.length; i++) {
-            if (this.checkLine(this.field_buf[i]) !== Mark.None) {
-                return this.field_buf[i][0];
+            if (this.tilemap.field.isFull()) {
+                console.log('Draw');
             }
+        } else if (this.gameManager.isMouseUp()) {
+            this.gameManager.reverseIsDown();
         }
-        // 縦
-        for (let i=0; i<this.field_buf.length; i++) {
-            if (this.checkLine([this.field_buf[0][i], this.field_buf[1][i], this.field_buf[2][i]]) !== Mark.None) {
-                return this.field_buf[0][i];
-            }
-        }
-        // 斜め
-        if (this.checkLine([this.field_buf[0][0], this.field_buf[1][1], this.field_buf[2][2]]) !== Mark.None) {
-            return this.field_buf[0][0];
-        }
-        return Mark.None;
-    }
-
-    private getTileCoordinate(x: number, y: number): [number, number] {
-        const tx = Math.floor(x / this.MAP_SIZE);
-        const ty = Math.floor(y / this.MAP_SIZE);
-        return [tx, ty];
-    }
-
-    private getTileset(name: string, map: Phaser.Tilemaps.Tilemap) {
-        const tileset = map.addTilesetImage(name);
-        if (tileset == null)  {
-            throw new Error('tileset is null');
-        }
-        return tileset;
-    }
-
-    private getLayer(tileset: Phaser.Tilemaps.Tileset) {
-        const layer = this.map?.createLayer(0, tileset, 0, 0);
-        if (layer == null)  {
-            throw new Error('layer is null');
-        }
-        return layer;
     }
 }
