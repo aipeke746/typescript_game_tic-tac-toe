@@ -1,7 +1,18 @@
+/**
+ * タイトル画面に遷移するテキスト
+ */
 export class TitleText {
+    /**
+     * フォントサイズ
+     */
     private FONT_SIZE: number = 32;
+    /**
+     * 文字の内容
+     */
     private CONTENT: string = 'TITLE PAGE';
-
+    /**
+     * Phaserのテキストオブジェクト
+     */
     private text: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, ) {
@@ -18,7 +29,11 @@ export class TitleText {
             });
     }
 
-    public setVisible(visible: boolean) {
+    /**
+     * タイトル画面に遷移する文字を表示するかどうかを設定する
+     * @param visible 表示するかどうか
+     */
+    public setVisible(visible: boolean): void {
         this.text.setVisible(visible);
     }
 }
