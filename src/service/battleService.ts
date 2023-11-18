@@ -1,4 +1,5 @@
 import { Coordinate } from "../entity/coordinate";
+import { TitleText } from "../entity/titleText";
 import { Tilemap } from "../map/tilemap";
 import { MarkType } from "../type/markType";
 import { GameManager } from "../manager/gameManager";
@@ -13,7 +14,7 @@ export class BattleService {
      * @param tilemap タイルマップ
      * @param coordinate タイルマップの座標
      */
-    public static gameFlow(gameManager: GameManager, tilemap: Tilemap, coordinate: Coordinate) {
+    public static gameFlow(gameManager: GameManager, tilemap: Tilemap, coordinate: Coordinate): void {
         gameManager.isSenkoTurn()
             ? tilemap.field.update(coordinate, MarkType.Maru)
             : tilemap.field.update(coordinate, MarkType.Batsu);
@@ -28,7 +29,7 @@ export class BattleService {
      * @param tilemap タイルマップ
      * @param titleText タイトルテキスト
      */
-    public static gameJudge(gameManager: GameManager, tilemap: Tilemap, titleText: Phaser.GameObjects.Text) {
+    public static gameJudge(gameManager: GameManager, tilemap: Tilemap, titleText: TitleText): void {
         const winner = tilemap.field.getLine();
         if (winner !== MarkType.None) {
             gameManager.setWinner(winner);
@@ -37,5 +38,17 @@ export class BattleService {
         if (tilemap.field.isFull()) {
             titleText.setVisible(true);
         }
+    }
+
+    /**
+     * ゲームの勝者を表示する
+     * @param scene シーン
+     * @param gameManager ゲームマネージャー
+     */
+    public static showWinner(scene: Phaser.Scene, gameManager: GameManager): void {
+        const winner = gameManager.getWinner() === MarkType.Maru ? '⚪︎' : '×';
+        scene.add.text(scene.sys.canvas.width/2, scene.sys.canvas.height - 50, 'WINNER: ' + winner)
+            .setOrigin(0.5)
+            .setFontSize(32);
     }
 }

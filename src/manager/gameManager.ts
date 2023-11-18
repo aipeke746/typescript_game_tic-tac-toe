@@ -17,10 +17,6 @@ export class GameManager {
      */
     private isSenko = true;
     /**
-     * ターン数
-     */
-    private count = 0;
-    /**
      * 勝者
      */
     private winner = MarkType.None;
@@ -73,7 +69,6 @@ export class GameManager {
      */
     public nextTurn(): void {
         this.isSenko = !this.isSenko;
-        this.count++;
     }
 
     /**

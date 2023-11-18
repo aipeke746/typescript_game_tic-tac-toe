@@ -4,11 +4,12 @@ import { GameManager } from "../manager/gameManager";
 import { MarkType } from "../type/markType";
 import { BattleService } from "../service/battleService";
 import { CoordinateFactory } from "../factory/coordinateFactory";
+import { TitleText } from "../entity/titleText";
 
 export class GameScene extends Phaser.Scene {
     private gameManager?: GameManager;
     private tilemap?: Tilemap;
-    private titleText?: Phaser.GameObjects.Text;
+    private titleText?: TitleText
 
     constructor() {
         super({ key: 'gameScene' });
@@ -22,18 +23,7 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.fadeIn(500, 255, 255, 255);
         this.gameManager = new GameManager(this);
         this.tilemap = new Tilemap(this, 'mapTiles');
-
-        this.titleText = this.add.text(this.sys.canvas.width/2, this.sys.canvas.height/2, 'TITLE PAGE')
-            .setOrigin(0.5)
-            .setFontSize(32)
-            .setVisible(false)
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.cameras.main.fadeOut(500, 255, 255, 255);
-                this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                    this.scene.start('titleScene');
-                });
-            });
+        this.titleText = new TitleText(this);
     }
 
     update() {
@@ -41,10 +31,7 @@ export class GameScene extends Phaser.Scene {
 
         // 勝者が決まった場合
         if (this.gameManager.getWinner() !== MarkType.None) {
-            const winner = this.gameManager.getWinner() == MarkType.Maru ? '○' : 'x';
-            this.add.text(this.sys.canvas.width/2, this.sys.canvas.height - 50, 'WINNER: ' + winner)
-                .setOrigin(0.5)
-                .setFontSize(32);
+            BattleService.showWinner(this, this.gameManager);
             return;
         }
 
