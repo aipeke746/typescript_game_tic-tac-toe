@@ -22,6 +22,10 @@ export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'gameScene' });
     }
+
+    init(data: any) {
+        this.player = new Player(data.isSenko);
+    }
     
     preload() {
         this.load.image('mapTiles', 'assets/images/maru_batsu.png');
@@ -32,7 +36,6 @@ export class GameScene extends Phaser.Scene {
         this.gameManager = new GameManager(this);
         this.tilemap = new Tilemap(this, 'mapTiles');
         this.titleText = new TitleText(this);
-        this.player = new Player(true);
         this.computer = new ComputerServiceImpl();
     }
 
