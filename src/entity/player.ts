@@ -9,6 +9,10 @@ export class Player {
      */
     private myMark: MarkType;
 
+    /**
+     * 先行かどうかを指定してプレイヤーが使用するマークを設定する
+     * @param isSenko プレイヤーが先攻かどうか
+     */
     constructor(isSenko: boolean) {
         this.myMark = isSenko ? MarkType.Maru : MarkType.Batsu;
     }
