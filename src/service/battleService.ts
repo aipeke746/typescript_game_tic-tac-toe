@@ -4,6 +4,7 @@ import { Player } from "../entity/player";
 import { Tilemap } from "../map/tilemap";
 import { MarkType } from "../type/markType";
 import { GameManager } from "../manager/gameManager";
+import { SoundManager } from "../manager/soundManager";
 import { ComputerService } from "./computer/computerService";
 import { CoordinateFactory } from "../factory/coordinateFactory";
 
@@ -28,13 +29,17 @@ export class BattleService {
      * @param gameManager ゲームマネージャー
      * @param tilemap タイルマップ
      */
-    public static playerTurn(gameManager: GameManager, tilemap: Tilemap): void {
+    public static playerTurn(gameManager: GameManager, tilemap: Tilemap, soundManager: SoundManager): void {
         if (gameManager.isMouseDown()) {
             // クリックした時の処理
             gameManager.reverseIsDown();
             const coordinate: Coordinate = CoordinateFactory.createByMousePos(gameManager.getMousePos());
-            if (!this.canPutMark(coordinate, tilemap)) return;
+            if (!this.canPutMark(coordinate, tilemap)) {
+                soundManager.playNotSetMarkSound();
+                return;
+            }
 
+            soundManager.playSetMarkSound();
             this.gameFlow(gameManager, tilemap, coordinate);
         } else if (gameManager.isMouseUp()) {
             // クリックを離した時の処理
