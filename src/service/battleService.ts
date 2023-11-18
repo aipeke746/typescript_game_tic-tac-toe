@@ -1,5 +1,6 @@
 import { Coordinate } from "../entity/coordinate";
 import { TitleText } from "../entity/titleText";
+import { Player } from "../entity/player";
 import { Tilemap } from "../map/tilemap";
 import { MarkType } from "../type/markType";
 import { GameManager } from "../manager/gameManager";
@@ -8,6 +9,18 @@ import { GameManager } from "../manager/gameManager";
  * ゲーム対戦に関するサービス
  */
 export class BattleService {
+
+    /**
+     * 現在のターンがプレイヤーターンかどうかを返す
+     * @param gameManager ゲームマネージャー
+     * @param player プレイヤー
+     * @returns プレイヤーターンかどうかを返す
+     */
+    public static isPlayerTurn(gameManager: GameManager, player: Player): boolean {
+        const playerMark: MarkType = player.getMyMark();
+        return playerMark === gameManager.getMarkByCurrentTurn();
+    }
+
     /**
      * ゲームの流れを管理
      * @param gameManager ゲームマネージャー

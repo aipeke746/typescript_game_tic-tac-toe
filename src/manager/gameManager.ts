@@ -50,11 +50,18 @@ export class GameManager {
     }
 
     /**
-     * センタ校のターンかどうかを取得する
+     * 先行のターンかどうかを取得する
      * @returns 先行のターンの場合はtrue
      */
     public isSenkoTurn(): boolean {
         return this.isSenko;
+    }
+
+    /**
+     * 現在のターンのマークを返す
+     */
+    public getMarkByCurrentTurn(): MarkType {
+        return this.isSenkoTurn() ? MarkType.Maru : MarkType.Batsu;
     }
 
     /**

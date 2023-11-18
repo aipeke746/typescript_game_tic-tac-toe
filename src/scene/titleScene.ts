@@ -1,9 +1,13 @@
+/**
+ * タイトル画面
+ */
 export class TitleScene extends Phaser.Scene {
     constructor() {
         super({ key: 'titleScene' });
     }
 
     create() {
+        // スタートボタン
         this.add.text(this.sys.canvas.width/2, this.sys.canvas.height/2, 'START')
             .setOrigin(0.5)
             .setFontSize(32)
