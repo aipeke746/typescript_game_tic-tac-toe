@@ -46,7 +46,7 @@ export class GameScene extends Phaser.Scene {
             // ゲームプレイ中
             BattleService.isPlayerTurn(this.gameManager, this.player)
                 ? BattleService.playerTurn(this.gameManager, this.tilemap)
-                : BattleService.computerTurn(this.computer, this.gameManager, this.tilemap);
+                : BattleService.computerTurn(this.gameManager, this.tilemap, this.computer);
         }
     }
 }

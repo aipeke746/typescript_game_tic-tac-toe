@@ -48,7 +48,7 @@ export class BattleService {
      * @param gameManager ゲームマネージャー
      * @param tilemap タイルマップ
      */
-    public static computerTurn(computer: ComputerService, gameManager: GameManager, tilemap: Tilemap): void {
+    public static computerTurn(gameManager: GameManager, tilemap: Tilemap, computer: ComputerService): void {
         const coordinate: Coordinate = computer.getCoordinate();
         if (!this.canPutMark(coordinate, tilemap)) return;
 
