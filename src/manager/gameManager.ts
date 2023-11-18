@@ -16,10 +16,6 @@ export class GameManager {
      * 先攻かどうか（先行は○）
      */
     private isSenko = true;
-    /**
-     * 勝者
-     */
-    private winner = MarkType.None;
 
     constructor(scene: Phaser.Scene) {
         this.pointer = scene.input.activePointer;
@@ -76,21 +72,5 @@ export class GameManager {
      */
     public nextTurn(): void {
         this.isSenko = !this.isSenko;
-    }
-
-    /**
-     * 勝者を設定する
-     * @param winner 勝者を設定する
-     */
-    public setWinner(winner: MarkType): void {
-        this.winner = winner;
-    }
-
-    /**
-     * 勝者を取得する
-     * @returns 勝者を取得する
-     */
-    public getWinner(): MarkType {
-        return this.winner;
     }
 }

@@ -4,6 +4,8 @@ import { Player } from "../entity/player";
 import { Tilemap } from "../map/tilemap";
 import { MarkType } from "../type/markType";
 import { GameManager } from "../manager/gameManager";
+import { ComputerService } from "./computer/computerService";
+import { CoordinateFactory } from "../factory/coordinateFactory";
 
 /**
  * ゲーム対戦に関するサービス
@@ -22,35 +24,50 @@ export class BattleService {
     }
 
     /**
-     * ゲームの流れを管理
+     * プレイヤーターンの処理
      * @param gameManager ゲームマネージャー
      * @param tilemap タイルマップ
-     * @param coordinate タイルマップの座標
      */
-    public static gameFlow(gameManager: GameManager, tilemap: Tilemap, coordinate: Coordinate): void {
-        gameManager.isSenkoTurn()
-            ? tilemap.field.update(coordinate, MarkType.Maru)
-            : tilemap.field.update(coordinate, MarkType.Batsu);
-        
-        gameManager.nextTurn();
-        tilemap.updateTile(tilemap.field.getMarkType(coordinate), coordinate);
+    public static playerTurn(gameManager: GameManager, tilemap: Tilemap): void {
+        if (gameManager.isMouseDown()) {
+            // クリックした時の処理
+            gameManager.reverseIsDown();
+            const coordinate: Coordinate = CoordinateFactory.createByMousePos(gameManager.getMousePos());
+            if (!this.canPutMark(coordinate, tilemap)) return;
+
+            this.gameFlow(gameManager, tilemap, coordinate);
+        } else if (gameManager.isMouseUp()) {
+            // クリックを離した時の処理
+            gameManager.reverseIsDown();
+        }
     }
 
     /**
-     * ゲームの判定（未決、勝敗、引き分け）
+     * コンピュータターンの処理
+     * @param computer コンピューターの処理方法
      * @param gameManager ゲームマネージャー
      * @param tilemap タイルマップ
-     * @param titleText タイトルテキスト
      */
-    public static gameJudge(gameManager: GameManager, tilemap: Tilemap, titleText: TitleText): void {
-        const winner = tilemap.field.getLine();
-        if (winner !== MarkType.None) {
-            gameManager.setWinner(winner);
-            titleText.setVisible(true);
+    public static computerTurn(computer: ComputerService, gameManager: GameManager, tilemap: Tilemap): void {
+        const coordinate: Coordinate = computer.getCoordinate();
+        if (!this.canPutMark(coordinate, tilemap)) return;
+
+        this.gameFlow(gameManager, tilemap, coordinate);
+    }
+
+    /**
+     * ゲームの終了判定
+     * @param tilemap タイルマップ
+     * @returns ゲームの決着（勝敗、引き分け）がついた場合はtrue
+     */
+    public static finishGame(tilemap: Tilemap): boolean {
+        if (tilemap.field.getLine() !== MarkType.None) {
+            return true;
         }
         if (tilemap.field.isFull()) {
-            titleText.setVisible(true);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -58,10 +75,41 @@ export class BattleService {
      * @param scene シーン
      * @param gameManager ゲームマネージャー
      */
-    public static showWinner(scene: Phaser.Scene, gameManager: GameManager): void {
-        const winner = gameManager.getWinner() === MarkType.Maru ? '⚪︎' : '×';
-        scene.add.text(scene.sys.canvas.width/2, scene.sys.canvas.height - 50, 'WINNER: ' + winner)
+    public static showWinner(scene: Phaser.Scene, tilemap: Tilemap, player: Player, titleText: TitleText): void {
+        const winnerMark: MarkType = tilemap.field.getLine();
+        const winner = winnerMark === player.getMyMark()
+            ? 'You WIN' : 'You LOSE';
+
+        scene.add.text(scene.sys.canvas.width/2, scene.sys.canvas.height - 50, winner)
             .setOrigin(0.5)
             .setFontSize(32);
+        titleText.setVisible(true);
+    }
+
+    /**
+     * マークをセットできるかどうかを返す
+     * @param coordinate 座標
+     * @param tilemap タイルマップ
+     * @returns マークがセットできる場合はtrue
+     */
+    private static canPutMark(coordinate: Coordinate, tilemap: Tilemap): boolean {
+        if (coordinate.isInvalid()) return false;
+        if (tilemap.field.getMarkType(coordinate) !== MarkType.None) return false;
+        return true;
+    }
+
+    /**
+     * ゲームの流れを管理
+     * @param gameManager ゲームマネージャー
+     * @param tilemap タイルマップ
+     * @param coordinate タイルマップの座標
+     */
+    private static gameFlow(gameManager: GameManager, tilemap: Tilemap, coordinate: Coordinate): void {
+        gameManager.isSenkoTurn()
+            ? tilemap.field.update(coordinate, MarkType.Maru)
+            : tilemap.field.update(coordinate, MarkType.Batsu);
+
+        gameManager.nextTurn();
+        tilemap.updateTile(tilemap.field.getMarkType(coordinate), coordinate);
     }
 }
