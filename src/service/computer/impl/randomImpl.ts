@@ -1,21 +1,19 @@
 import { Coordinate } from "../../../entity/coordinate";
-import { Field } from "../../../entity/field";
 import { ComputerService } from "../computerService";
-import { CoordinateFactory } from "../../../factory/coordinateFactory";
+import { Tilemap } from "../../../map/tilemap";
 
 /**
- * コンピューターがランダムにマークを置く
+ * コンピューターがマークが未セットの座標に対してランダムにマークをセットする
  */
 export class RandomImpl implements ComputerService {
 
     /**
-     * ランダムな座標を取得する
-     * @returns ランダムな座標
+     * マークが未セットの座標の中からランダムな座標を返す
+     * @returns マークが未セットのランダムな座標
      */
-    public getCoordinate(): Coordinate {
-        return CoordinateFactory.createByCoordinate(
-            Math.floor(Math.random() * Field.LENGTH),
-            Math.floor(Math.random() * Field.LENGTH)
-        );
+    public getCoordinate(tilemap: Tilemap): Coordinate {
+        const emptyCoordinates: Coordinate[] = tilemap.field.getEmptyCoordinates();
+        const randomIndex: number = Math.floor(Math.random() * emptyCoordinates.length);
+        return emptyCoordinates[randomIndex];
     }
 }

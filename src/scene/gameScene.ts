@@ -5,7 +5,7 @@ import { GameManager } from "../manager/gameManager";
 import { SoundManager } from "../manager/soundManager";
 import { BattleService } from "../service/battleService";
 import { ComputerService } from "../service/computer/computerService";
-import { RandomImpl } from "../service/computer/impl/randomImpl";
+import { SimpleImpl } from "../service/computer/impl/simpleImpl";
 
 /**
  * ゲームプレイ画面
@@ -40,7 +40,7 @@ export class GameScene extends Phaser.Scene {
         this.soundManager = new SoundManager(this);
         this.tilemap = new Tilemap(this, 'mapTiles');
         this.titleText = new TitleText(this);
-        this.computer = new RandomImpl();
+        this.computer = new SimpleImpl();
     }
 
     update() {
@@ -53,7 +53,7 @@ export class GameScene extends Phaser.Scene {
             // ゲームプレイ中
             BattleService.isPlayerTurn(this.gameManager, this.player)
                 ? BattleService.playerTurn(this.gameManager, this.tilemap, this.soundManager)
-                : BattleService.computerTurn(this.gameManager, this.tilemap, this.computer);
+                : BattleService.computerTurn(this.gameManager, this.tilemap, this.player, this.computer);
         }
     }
 }

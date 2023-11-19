@@ -24,4 +24,12 @@ export class Player {
     public getMyMark(): MarkType {
         return this.myMark;
     }
+
+    /**
+     * 対戦相手のマークを返す
+     * @returns 対戦相手のマークを返す
+     */
+    public getOpponentMark(): MarkType {
+        return this.myMark === MarkType.Maru ? MarkType.Batsu : MarkType.Maru;
+    }
 }

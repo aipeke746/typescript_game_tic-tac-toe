@@ -1,5 +1,6 @@
 import { MarkType } from "../type/markType";
 import { Coordinate } from "./coordinate";
+import { CoordinateFactory } from "../factory/coordinateFactory";
 
 /**
  * フィールドを扱うクラスで各マスの情報を保持する
@@ -27,6 +28,16 @@ export class Field {
     }
 
     /**
+     * フィールドの情報をコピーしたフィールドを返す
+     * @returns フィールドの情報をコピーしたフィールド
+     */
+    public clone() {
+        const field = new Field();
+        field.field = this.field.map((line) => line.slice());
+        return field;
+    }
+
+    /**
      * フィールドの座標を指定して
      * @param coordinate フィールドの座標
      * @returns フィールドの座標のマーク
@@ -42,6 +53,24 @@ export class Field {
      */
     public isFull(): boolean {
         return this.field.every((line) => line.every((mark) => mark !== MarkType.None));
+    }
+
+    /**
+     * マーク（マル・バツ）がセットされていない座標を取得する
+     * @returns マークが未セットの座標
+     */
+    public getEmptyCoordinates(): Coordinate[] {
+        let emptyCoordinates: Coordinate[] = [];
+
+        for (let y=0; y<Field.LENGTH; y++) {
+            for (let x=0; x<Field.LENGTH; x++) {
+                const coordinate: Coordinate = CoordinateFactory.createByCoordinate(x, y);
+                if (this.getMarkType(coordinate) === MarkType.None) {
+                    emptyCoordinates.push(coordinate);
+                }
+            }
+        }
+        return emptyCoordinates;
     }
 
     /**

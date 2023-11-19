@@ -53,8 +53,8 @@ export class BattleService {
      * @param gameManager ゲームマネージャー
      * @param tilemap タイルマップ
      */
-    public static computerTurn(gameManager: GameManager, tilemap: Tilemap, computer: ComputerService): void {
-        const coordinate: Coordinate = computer.getCoordinate();
+    public static computerTurn(gameManager: GameManager, tilemap: Tilemap, player: Player, computer: ComputerService): void {
+        const coordinate: Coordinate = computer.getCoordinate(tilemap, player);
         if (!this.canPutMark(coordinate, tilemap)) return;
 
         this.gameFlow(gameManager, tilemap, coordinate);
