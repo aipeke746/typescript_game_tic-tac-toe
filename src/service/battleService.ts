@@ -82,8 +82,11 @@ export class BattleService {
      */
     public static showWinner(scene: Phaser.Scene, tilemap: Tilemap, player: Player, titleText: TitleText): void {
         const winnerMark: MarkType = tilemap.field.getLine();
-        const winner = winnerMark === player.getMyMark()
+        let winner = winnerMark === player.getMyMark()
             ? 'You WIN' : 'You LOSE';
+        if (winnerMark === MarkType.None) {
+            winner = 'DRAW';
+        }
 
         scene.add.text(scene.sys.canvas.width/2, scene.sys.canvas.height - 50, winner)
             .setOrigin(0.5)
