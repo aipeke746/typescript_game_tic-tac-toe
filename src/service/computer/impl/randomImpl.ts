@@ -6,7 +6,7 @@ import { CoordinateFactory } from "../../../factory/coordinateFactory";
 /**
  * コンピューターがランダムにマークを置く
  */
-export class ComputerServiceImpl implements ComputerService {
+export class RandomImpl implements ComputerService {
 
     /**
      * ランダムな座標を取得する

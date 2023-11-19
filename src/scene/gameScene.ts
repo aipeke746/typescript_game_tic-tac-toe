@@ -5,7 +5,7 @@ import { GameManager } from "../manager/gameManager";
 import { SoundManager } from "../manager/soundManager";
 import { BattleService } from "../service/battleService";
 import { ComputerService } from "../service/computer/computerService";
-import { ComputerServiceImpl } from "../service/computer/impl/randomImpl";
+import { RandomImpl } from "../service/computer/impl/randomImpl";
 
 /**
  * ゲームプレイ画面
@@ -40,7 +40,7 @@ export class GameScene extends Phaser.Scene {
         this.soundManager = new SoundManager(this);
         this.tilemap = new Tilemap(this, 'mapTiles');
         this.titleText = new TitleText(this);
-        this.computer = new ComputerServiceImpl();
+        this.computer = new RandomImpl();
     }
 
     update() {
